@@ -14,7 +14,13 @@ apt-get install isc-dhcp-server
 dhcpd --version
 ```
 
-Pada node Alderion `nano /etc/default/isc-dhcp-server`
+`nano /etc/default/isc-dhcp-server`
+
+<img width="207" height="84" alt="image" src="https://github.com/user-attachments/assets/12a4937d-603b-4e1c-ae3b-894bbf169869" />
+
+
+
+Pada node Alderion `nano /etc/dhcp/dhcpd.conf`
 
 ```
 default-lease-time 600;
@@ -40,7 +46,11 @@ subnet 10.83.2.0 netmask 255.255.255.0 {
 subnet 10.83.3.0 netmask 255.255.255.0 {}
 
 host khamul {
-    hardware ethernet XX:XX:XX:XX:XX:XX;
+    hardware ethernet 02:42:ca:fb:1c:00 ;
     fixed-address 10.83.3.95;
 }
 ```
+`service isc-dhcp-server restart`
+`service isc-dhcp-server status`
+
+
