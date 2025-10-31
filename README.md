@@ -53,4 +53,69 @@ host khamul {
 `service isc-dhcp-server restart`
 `service isc-dhcp-server status`
 
+### Soal 6
+---
+
+
+status di Aldarion
+```
+
+root@Aldarion:~# cat /var/lib/dhcp/dhcpd.leases | grep -E "10.83.1|10.83.2" -A 5
+lease 10.83.2.35 {
+  starts 5 2025/10/31 08:09:41;
+  ends 5 2025/10/31 08:19:41;
+  tstp 5 2025/10/31 08:19:41;
+  cltt 5 2025/10/31 08:09:41;
+  binding state active;
+--
+lease 10.83.1.7 {
+  starts 5 2025/10/31 08:09:42;
+  ends 5 2025/10/31 08:19:42;
+  tstp 5 2025/10/31 08:19:42;
+  cltt 5 2025/10/31 08:09:42;
+  binding state active;
+--
+lease 10.83.1.6 {
+  starts 5 2025/10/31 07:54:40;
+  ends 6 2025/11/01 07:54:40;
+  tstp 6 2025/11/01 07:54:40;
+  cltt 5 2025/10/31 07:54:40;
+  binding state abandoned;
+--
+lease 10.83.2.35 {
+  starts 5 2025/10/31 08:14:42;
+  ends 5 2025/10/31 08:24:42;
+  cltt 5 2025/10/31 08:14:42;
+  binding state active;
+  next binding state free;
+--
+lease 10.83.1.7 {
+  starts 5 2025/10/31 08:14:42;
+  ends 5 2025/10/31 08:44:42;
+  cltt 5 2025/10/31 08:14:42;
+  binding state active;
+  next binding state free;
+--
+lease 10.83.1.8 {
+  starts 5 2025/10/31 08:16:34;
+  ends 5 2025/10/31 08:46:34;
+  cltt 5 2025/10/31 08:16:34;
+  binding state active;
+  next binding state free;
+--
+lease 10.83.2.36 {
+  starts 5 2025/10/31 08:19:18;
+  ends 5 2025/10/31 08:29:18;
+  cltt 5 2025/10/31 08:19:18;
+  binding state active;
+  next binding state free;
+--
+lease 10.83.2.35 {
+  starts 5 2025/10/31 08:19:42;
+  ends 5 2025/10/31 08:29:42;
+  cltt 5 2025/10/31 08:19:42;
+  binding state active;
+  next binding state free;
+```
+
 
