@@ -53,6 +53,26 @@ host khamul {
 `service isc-dhcp-server restart`
 `service isc-dhcp-server status`
 
+#### Cek di gilgalad
+---
+
+<img width="970" height="283" alt="image" src="https://github.com/user-attachments/assets/d3ad4b60-ea5a-4842-96f6-011e47654258" />
+
+#### cek di Amandil
+---
+
+<img width="969" height="294" alt="image" src="https://github.com/user-attachments/assets/9927b2ef-4b6b-47cd-8b90-2a561e8ca496" />
+
+
+### Soal 4
+---
+
+<img width="816" height="507" alt="image" src="https://github.com/user-attachments/assets/5a4295b4-6d7c-4cf9-a714-20b40b7210b9" />
+
+
+<img width="812" height="569" alt="image" src="https://github.com/user-attachments/assets/75f4aeed-c2c8-4191-8452-358aea2fe8bb" />
+
+
 ### Soal 6
 ---
 
