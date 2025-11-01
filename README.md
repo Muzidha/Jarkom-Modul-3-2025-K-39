@@ -73,6 +73,60 @@ host khamul {
 <img width="812" height="569" alt="image" src="https://github.com/user-attachments/assets/75f4aeed-c2c8-4191-8452-358aea2fe8bb" />
 
 
+### Soal 5
+---
+
+#### Cek Erendis
+---
+<img width="879" height="583" alt="image" src="https://github.com/user-attachments/assets/a538781e-30b9-4acc-84b9-d26e2c149ba0" />
+
+#### Cek Amdir
+---
+
+<img width="828" height="513" alt="image" src="https://github.com/user-attachments/assets/74c7b9b6-47ce-4f84-8d73-6f5f3871cecd" />
+
+### Soal 5
+---
+
+#### Cek Amandil
+---
+
+<img width="961" height="189" alt="image" src="https://github.com/user-attachments/assets/06012121-f4fb-4369-ba3d-856f432f50eb" />
+
+#### Cek gilgalad
+---
+
+<img width="963" height="162" alt="image" src="https://github.com/user-attachments/assets/f32331b5-c281-49d9-9e27-e45f86495a77" />
+
+#### Cek di Aldarion
+---
+
+```
+set vendor-class-identifier = "udhcp 1.36.1";
+}
+lease 10.83.1.7 {
+  starts 6 2025/11/01 16:58:58;
+  ends 6 2025/11/01 17:28:58;
+  cltt 6 2025/11/01 16:58:58;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 02:42:fa:df:52:00;
+  uid "\001\002B\372\337R\000";
+  set vendor-class-identifier = "udhcp 1.36.1";
+}
+lease 10.83.2.36 {
+  starts 6 2025/11/01 17:00:02;
+  ends 6 2025/11/01 17:10:02;
+  cltt 6 2025/11/01 17:00:02;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 02:42:8d:d8:4f:00;
+  client-hostname "Gilgalad";
+```
+
+
 ### Soal 6
 ---
 
