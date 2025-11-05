@@ -1,8 +1,210 @@
 # Jarkom-Modul-3-2025-K-39
 
+## Topologi
+---
+
+<img width="891" height="718" alt="image" src="https://github.com/user-attachments/assets/9a9f1248-2b6b-42e7-a34a-10d453e0075d" />
+
 
 ### Soal 1
 ---
+Di awal Zaman Kedua, setelah kehancuran Beleriand, para Valar menugaskan untuk membangun kembali jaringan komunikasi antar kerajaan. Para Valar menyalakan Minastir, Aldarion, Erendis, Amdir, Palantir, Narvi, Elros, Pharazon, Elendil, Isildur, Anarion, Galadriel, Celeborn, Oropher, Miriel, Amandil, Gilgalad, Celebrimbor, Khamul, dan pastikan setiap node (selain Durin sang penghubung antar dunia) dapat sementara berkomunikasi dengan Valinor/Internet (nameserver 192.168.122.1) untuk menerima instruksi awal.
+
+#### Konfigurasi
+```
+#Durin
+auto eth0
+iface eth0 inet dhcp
+
+auto eth1
+iface eth1 inet static
+	address 10.83.1.1
+	netmask 255.255.255.0
+
+auto eth2
+iface eth2 inet static
+	address 10.83.2.1
+	netmask 255.255.255.0
+
+auto eth3
+iface eth3 inet static
+	address 10.83.3.1
+	netmask 255.255.255.0
+
+auto eth4
+iface eth4 inet static
+	address 10.83.4.1
+	netmask 255.255.255.0
+
+auto eth5
+iface eth5 inet static
+	address 10.83.5.1
+	netmask 255.255.255.0
+
+up iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE -s 10.83.0.0/16
+
+#Elendil
+auto eth0
+iface eth0 inet static
+    address 10.83.1.2
+    netmask 255.255.255.0
+    gateway 10.83.1.1
+ up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Isildur
+auto eth0
+iface eth0 inet static
+    address 10.83.1.3
+    netmask 255.255.255.0
+    gateway 10.83.1.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Anarion
+auto eth0
+iface eth0 inet static
+    address 10.83.1.4
+    netmask 255.255.255.0
+    gateway 10.83.1.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Miriel
+auto eth0
+iface eth0 inet static
+    address 10.83.1.5
+    netmask 255.255.255.0
+    gateway 10.83.1.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Amandil
+auto eth0
+iface eth0 inet dhcp
+
+#Elros
+auto eth0
+iface eth0 inet static
+    address 10.83.1.6
+    netmask 255.255.255.0
+    gateway 10.83.1.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Gilgalad
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+
+
+#Celebrimbor
+auto eth0
+iface eth0 inet static
+    address 10.83.2.2
+    netmask 255.255.255.0
+    gateway 10.83.2.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Pharazon
+auto eth0
+iface eth0 inet static
+    address 10.83.2.3
+    netmask 255.255.255.0
+    gateway 10.83.2.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Galadriel
+auto eth0
+iface eth0 inet static
+    address 10.83.2.4
+    netmask 255.255.255.0
+    gateway 10.83.2.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Celeborn
+auto eth0
+iface eth0 inet static
+    address 10.83.2.5
+    netmask 255.255.255.0
+    gateway 10.83.2.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Oropher
+auto eth0
+iface eth0 inet static
+    address 10.83.2.6
+    netmask 255.255.255.0
+    gateway 10.83.2.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Khamul
+auto eth0
+iface eth0 inet static
+    address 10.83.3.2
+    netmask 255.255.255.0
+    gateway 10.83.3.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Erendis
+auto eth0
+iface eth0 inet static
+    address 10.83.3.3
+    netmask 255.255.255.0
+    gateway 10.83.3.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Amdir
+auto eth0
+iface eth0 inet static
+    address 10.83.3.4
+    netmask 255.255.255.0
+    gateway 10.83.3.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Aldarion
+auto eth0
+iface eth0 inet static
+    address 10.83.4.2
+    netmask 255.255.255.0
+    gateway 10.83.4.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Palantir
+auto eth0
+iface eth0 inet static
+    address 10.83.4.3
+    netmask 255.255.255.0
+    gateway 10.83.4.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Narvi
+auto eth0
+iface eth0 inet static
+    address 10.83.4.4
+    netmask 255.255.255.0
+    gateway 10.83.4.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+#Minastir
+auto eth0
+iface eth0 inet static
+    address 10.83.5.2
+    netmask 255.255.255.0
+    gateway 10.83.5.1
+    up echo nameserver 192.168.122.1 > /etc/resolv.conf
+```
+
+
+#### Tes untuk setiap node bisa connect ke internet
+---
+
+#### Durin
+
+<img width="958" height="349" alt="image" src="https://github.com/user-attachments/assets/759143c8-e7c3-4bcc-86d7-68e23e78d679" />
+
+#### Celebrimbor
+---
+
+<img width="942" height="287" alt="image" src="https://github.com/user-attachments/assets/6f6b3665-ffa8-4a73-8459-d75c2a79f8e9" />
+
 
 ### Soal 2
 ---
@@ -13,6 +215,7 @@ apt-get update
 apt-get install isc-dhcp-server
 dhcpd --version
 ```
+
 
 `nano /etc/default/isc-dhcp-server`
 
@@ -191,5 +394,33 @@ lease 10.83.2.35 {
   binding state active;
   next binding state free;
 ```
+
+Berdasarkan hasil `dhcpd.leases` yang Anda tunjukkan, ini adalah penjelasan untuk **Soal No. 6** mengenai pengaturan waktu peminjaman tanah (lease time):
+
+## Analisis Lease Time dari Log
+
+### **Client Dinamis Keluarga Manusia (10.83.1.x)**
+Contoh lease: `10.83.1.7` dan `10.83.1.8`
+```
+starts 5 2025/10/31 08:14:42;
+ends 5 2025/10/31 08:44:42;
+```
+- **Durasi**: 08:14:42 → 08:44:42 = **30 menit** 
+- Sesuai persyaratan: "Client Dinamis Keluarga Manusia dapat meminjam tanah selama **setengah jam**"
+
+### **Client Dinamis Keluarga Peri (10.83.2.x)**
+Contoh lease: `10.83.2.35` dan `10.83.2.36`
+```
+starts 5 2025/10/31 08:19:42;
+ends 5 2025/10/31 08:29:42;
+```
+- **Durasi**: 08:19:42 → 08:29:42 = **10 menit** 
+- Sesuai persyaratan: "Client Dinamis Keluarga Peri hanya **seperenam jam**" (1/6 × 60 = 10 menit)
+
+## Kesimpulan
+Konfigurasi DHCP untuk **Soal No. 6 sudah benar**:
+- ✅ Manusia: 30 menit (1800 detik)
+- ✅ Peri: 10 menit (600 detik)  
+- ✅ Max lease time: 1 jam (3600 detik) untuk semua
 
 
