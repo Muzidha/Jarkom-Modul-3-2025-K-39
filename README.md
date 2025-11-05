@@ -424,25 +424,216 @@ dig google.com
 
 
 ### Soal 4
+Ratu Erendis, sang pembuat peta, menetapkan nama resmi untuk wilayah utama (<xxxx>.com). Ia menunjuk dirinya (ns1.<xxxx>.com) dan muridnya Amdir (ns2.<xxxx>.com) sebagai penjaga peta resmi. Setiap lokasi penting (Palantir, Elros, Pharazon, Elendil, Isildur, Anarion, Galadriel, Celeborn, Oropher) diberikan nama domain unik yang menunjuk ke lokasi fisik tanah mereka. Pastikan Amdir selalu menyalin peta (master-slave) dari Erendis dengan setia.
+
+#### 1. Instalasi Paket BIND9 di Erendis dan Amdir
+Langkah pertama yaitu memasang layanan **BIND9** sebagai DNS server di kedua node, baik Master maupun Slave.
+```bash
+apt-get update
+apt-get install -y bind9 bind9utils dnsutils
+```
+
+#### 2. Konfigurasi DNS Master (Node Erendis)
+Setelah instalasi selesai, kita mulai mengatur DNS Master yang akan memegan kendali penuh atas zona k.39.com
+
+a. Backup file konfigurasi lama
+```bash
+cp /etc/bind/named.conf.local /etc/bind/named.conf.local.backup 2>/dev/null
+cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup 2>/dev/null
+```
+
+isi file dengan konfigurasi berikut:
+```bash
+zone "k39.com" {
+    type master;
+    file "/etc/bind/jarkom/k39.com";
+    allow-transfer { 10.83.3.4; }; // IP Amdir
+};
+```
+
+c. Atur file named.conf.options
+```bash
+nano /etc/bind/named.conf.options
+```
+isi file seperti berikut:
+
+```bash
+options {
+    directory "/var/cache/bind";
+    allow-query { any; };
+    allow-transfer { 10.83.3.4; };
+    auth-nxdomain no;
+    listen-on-v6 { any; };
+};
+```
+
+d. Buat direktori untuk file zone
+```bash
+mkdir -p /etc/bind/jarkom
+```
+
+e. Buat file zona k39.com
+```
+nano /etc/bind/jarkom/k39.com
+```
+
+Isi file sebagai berikut:
+```bash
+$TTL    604800
+@       IN      SOA     k39.com. root.k39.com. (
+                        2024103102
+                        604800
+                        86400
+                        2419200
+                        604800 )
+;
+@       IN      NS      ns1.k39.com.
+@       IN      NS      ns2.k39.com.
+
+@       IN      A       10.83.3.3
+ns1     IN      A       10.83.3.3
+ns2     IN      A       10.83.3.4
+
+palantir    IN  A       10.83.4.3
+elros       IN  A       10.83.1.6
+pharazon    IN  A       10.83.2.3
+elendil     IN  A       10.83.1.2
+isildur     IN  A       10.83.1.3
+anarion     IN  A       10.83.1.4
+galadriel   IN  A       10.83.2.4
+celeborn    IN  A       10.83.2.5
+oropher     IN  A       10.83.2.6
+```
+
+f. Ubah hak akses file zona
+```bash
+chown -R bind:bind /etc/bind/jarkom
+chmod 644 /etc/bind/jarkom/k39.com
+```
+
+g. Periksa sintaks file konfigurasi 
+```bash
+named-checkzone k39.com /etc/bind/jarkom/k39.com
+named-checkconf
+```
+Jika hasil menunjukkan OK dan tidak ada error, konfigurasi sudah benar.
+
+h. Restart layanan BIND9
+```BASH
+pkill named 2>/dev/null
+sleep 2
+named -u bind
+sleep 3
+```
+
+i. Atur resolver agar Erendis menggunakan DNS sendiri
+```bash
+echo "nameserver 10.83.3.3" > /etc/resolv.conf
+```
+
+j. Pengujian pada DNS Master
+```bash
+ping k39.com -c 2
+ping ns1.k39.com -c 2
+dig elendil.k39.com | grep -A 2 "ANSWER SECTION"
+```
+Hasil pengujian yang berhasil akan menampilkan IP yang sesuai dari file zona
+
 ---
 
-<img width="816" height="507" alt="image" src="https://github.com/user-attachments/assets/5a4295b4-6d7c-4cf9-a714-20b40b7210b9" />
+<img width="600" height="376" alt="image" src="https://github.com/user-attachments/assets/0470b35c-870a-4bcc-bf77-980ccbe78304" />
 
-
-<img width="812" height="569" alt="image" src="https://github.com/user-attachments/assets/75f4aeed-c2c8-4191-8452-358aea2fe8bb" />
-
-
-### Soal 5
 ---
 
-#### Cek Erendis
----
-<img width="879" height="583" alt="image" src="https://github.com/user-attachments/assets/a538781e-30b9-4acc-84b9-d26e2c149ba0" />
+#### 3. Konfigurasi DNS Slave (Node Amadir)
+Langkah berikutnya adalah mengatur Amdir sebagai DNS Slave yang akan menerima data zona dari Erendis secara otomatis.
 
-#### Cek Amdir
+a. Backup konfigurasi lama
+```bash
+cp /etc/bind/named.conf.local /etc/bind/named.conf.local.backup 2>/dev/null
+cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup 2>/dev/null
+```
+
+b. Atur file named.conf.local
+```bash
+nano /etc/bind/named.conf.local
+```
+
+isi dengan konfigurasi berikut:
+```bash
+zone "k39.com" {
+    type slave;
+    file "/var/lib/bind/k39.com";
+    masters { 10.83.3.3; };
+};
+```
+
+c. Atur file named.conf.options
+```
+nano /etc/bind/named.conf.options
+```
+
+isi file seperti berikut:
+```
+options {
+    directory "/var/cache/bind";
+    allow-query { any; };
+    auth-nxdomain no;
+    listen-on-v6 { any; };
+};
+```
+
+d. Pastikan izin direktori bind
+```bash
+chown bind:bind /var/lib/bind
+chmod 755 /var/lib/bind
+```
+
+e. Periksa konfigurasi 
+```bash
+named-checkconf
+```
+
+f. Jalankan ulang layanan BIND9
+```bash
+pkill named 2>/dev/null
+sleep 2
+named -u bind
+sleep 5
+```
+
+g. Atur resolver agar Amdir menggunakan DNS sendiri
+```bash
+echo "nameserver 10.83.3.4" > /etc/resolv.conf
+```
+
+h. Verifikasi transfer zona dari Master 
+```bash
+ls -la /var/lib/bind/k39.com
+```
+Jika file k39.com sudah muncul, berarti proses transfer AXFR berhasil.
+
 ---
 
-<img width="828" height="513" alt="image" src="https://github.com/user-attachments/assets/74c7b9b6-47ce-4f84-8d73-6f5f3871cecd" />
+<img width="579" height="46" alt="image" src="https://github.com/user-attachments/assets/d16d2253-ba7d-45e9-9443-a0206a1fbe26" />
+
+---
+
+i. Uji koneksi dan resolusi DNS
+```bash
+dig @10.83.3.3 k39.com AXFR | head -20
+ping k39.com -c 2
+ping ns2.k39.com -c 2
+dig elendil.k39.com | grep -A 2 "ANSWER SECTION"
+```
+Hasil yang diharapkan:
+Semua ping dan dig berhasil dengan IP yang benar, menandakan bahwa Amdir berhasil menjadi DNS Slave dari Erendis.
+
+---
+
+<img width="1015" height="728" alt="image" src="https://github.com/user-attachments/assets/83d2832b-5902-49a8-af8e-8d5164ac8c21" />
+
+---
 
 ### Soal 5
 ---
