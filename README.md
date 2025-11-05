@@ -1,5 +1,10 @@
 # Jarkom-Modul-3-2025-K-39
 
+| Nama                   | NRP         |
+|------------------------|-------------|
+| Raihan Fahri Ghazali   | 5027241061  |
+| M. Ziddan Habibi       | 5027241122  |
+
 ## Topologi
 ---
 
