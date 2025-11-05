@@ -213,6 +213,7 @@ Raja Pelaut Aldarion, penguasa wilayah Númenor, memutuskan cara pembagian tanah
 - Client Dinamis Keluarga Peri: Mendapatkan tanah di rentang [prefix ip].2.35 - [prefix ip].2.67 dan [prefix ip].2.96 - [prefix ip].2.121.
 - Khamul yang misterius: Diberikan tanah tetap di [prefix ip].3.95, agar keberadaannya selalu diketahui. Pastikan Durin dapat menyampaikan dekrit ini ke semua wilayah yang terhubung dengannya.
 ---
+
 ##### 1. Instalasi DHCP Server
 Pertama, lakukan update package dan instalasi DHCP server di node **Alderion**.
 ```bash
@@ -305,6 +306,114 @@ hasil pengujian:
 ---
 
 <img width="969" height="294" alt="image" src="https://github.com/user-attachments/assets/9927b2ef-4b6b-47cd-8b90-2a561e8ca496" />
+
+---
+
+### Soal 3
+Untuk mengontrol arus informasi ke dunia luar (Valinor/Internet), sebuah menara pengawas, Minastir didirikan. Minastir mengatur agar semua node (kecuali Durin) hanya dapat mengirim pesan ke luar Arda setelah melewati pemeriksaan di Minastir.
+
+#### 1. Instalasi Paket BIND9
+Sebelum konfigurasi dilakukan, pastikan kedua node (**Minastir** dan **Durin**) telah terpasang paket **BIND9** dan utilitas jaringan lain yang diperlukan.
+
+Jalankan perintah berikut di kedua node:
+```bash
+apt-get update
+apt-get install -y bind9 bind9utils bind9-doc dnsutils
+```
+
+#### 2. Konfigurasi pada Node Minastir (DNS Forwarder)
+a. Aktifkan IP Forwarding
+agar minastir dapat meneruspkan paket dari subnet lain, aktifkan fitur IP Forwarding menggunakan nano.
+
+```bash
+nano /etc/sysctl.conf
+```
+
+Tambahkan atau pastikan baris berikut ada di dalam file:
+```bash
+net.ipv4.ip_forward=1
+```
+
+Kemudian jalankan perintah berikut untuk mengaktifkan perubahan secara langsung:
+```bash
+sysctl -p
+```
+
+----
+
+<img width="269" height="34" alt="image" src="https://github.com/user-attachments/assets/ec841933-06fc-4e09-88a9-c940d2103ec8" />
+
+---
+
+b. Atur Jalur Default Gateaway
+Tambahkan route defauly agar Minastir dapat mengirim paket keluar melalui Durin.
+```bash
+ip route add default via 10.83.2.10
+```
+
+Lalu tambhakan route tambahan agar dapat menjangkau jaringan eksternal melalui NAT:
+```
+ip route add default via 10.83.5.1
+```
+
+c. Jalankan IP Forwarding Manual
+Sebagai langkah tambahan, aktifkan IP forwarding langsung tanpa perlu reboot.
+```bash
+echo 1 > /proc/sys/net/ipv4/ip_forward
+```
+
+#### 3. Konfigurasi pada Node Durin (Sebagai Router & NAT Gateraway)
+a. Aktifkan IP Forwarding
+Buka file konfigurasi systcl.conf untuk mengaktifkan forwarding pada node Durin.
+```bash
+nano /etc/sysctl.conf
+
+```
+
+Tambahkan baris berikut:
+```bash
+net.ipv4.ip_forward=1
+```
+
+Kemudian jalankan perintah untuk pengecekan:
+```bash
+sysctl -p
+```
+
+---
+
+<img width="234" height="39" alt="image" src="https://github.com/user-attachments/assets/ffe753d8-a321-4866-a0c9-2876b1b81471" />
+
+---
+
+b. Tambahkan Aturan NAT 
+Agar jaringan di belakang Durin dapat mengakses internet, tambahkan aturan NAT menggunakan iptables.
+
+```bash
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+```
+
+#### 4. Verifikasi & Hasil Pengujian
+Setelah semua konfigurasi dilakukan, lakukan pengujian konektivitas untuk memastikan semua node dapat berkomunikasi dengan baik.
+
+a. Uji Koneksi dari Minastir 
+```bash
+dig google.com
+```
+---
+
+<img width="632" height="439" alt="image" src="https://github.com/user-attachments/assets/d8784486-142c-40b4-ab00-6299675746e4" />
+
+---
+
+b. Uji koneksi dari Luar
+```bash
+dig google.com
+```
+---
+
+<img width="646" height="433" alt="image" src="https://github.com/user-attachments/assets/6382e855-4591-4a18-baac-6ca6b564997c" />
 
 ---
 
