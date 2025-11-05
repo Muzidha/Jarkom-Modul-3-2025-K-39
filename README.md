@@ -208,24 +208,38 @@ iface eth0 inet static
 
 ### Soal 2
 ---
-Simpan di root :
-
-```
+Raja Pelaut Aldarion, penguasa wilayah Númenor, memutuskan cara pembagian tanah client secara dinamis. Ia menetapkan:
+- Client Dinamis Keluarga Manusia: Mendapatkan tanah di rentang [prefix ip].1.6 - [prefix ip].1.34 dan [prefix ip].1.68 - [prefix ip].1.94.
+- Client Dinamis Keluarga Peri: Mendapatkan tanah di rentang [prefix ip].2.35 - [prefix ip].2.67 dan [prefix ip].2.96 - [prefix ip].2.121.
+- Khamul yang misterius: Diberikan tanah tetap di [prefix ip].3.95, agar keberadaannya selalu diketahui. Pastikan Durin dapat menyampaikan dekrit ini ke semua wilayah yang terhubung dengannya.
+---
+##### 1. Instalasi DHCP Server
+Pertama, lakukan update package dan instalasi DHCP server di node **Alderion**.
+```bash
 apt-get update
-apt-get install isc-dhcp-server
+apt-get install isc-dhcp-server -y
 dhcpd --version
 ```
 
+##### 2. Konfigurasi Interface DHCP Server 
+Buka file konfigurasi /etc/default/isc-dhcp-server dan sesuaikan interface yang digunakan.
+```bash
+nano /etc/default/isc-dhcp-server
+```
 
-`nano /etc/default/isc-dhcp-server`
+Lalu kita isi file menjadi seperti berikut
+```bash
+INTERFACESv4="eth0"
+INTERFACESv6=""
+```
 
 <img width="207" height="84" alt="image" src="https://github.com/user-attachments/assets/12a4937d-603b-4e1c-ae3b-894bbf169869" />
 
-
-
-Pada node Alderion `nano /etc/dhcp/dhcpd.conf`
-
-```
+##### 3. Konfigurasi file dhcpd.conf
+Selanjutnya, buka dan ubah konfigurasi utama DHCP di file /etc/dhcp/dhcpd.conf pada node Alderion 
+`nano /etc/dhcp/dhcpd.conf`
+Isilah konfigurasi sebagai berikut:
+```bash
 default-lease-time 600;
 max-lease-time 7200;
 authoritative;
@@ -253,18 +267,46 @@ host khamul {
     fixed-address 10.83.3.95;
 }
 ```
-`service isc-dhcp-server restart`
-`service isc-dhcp-server status`
+##### 4. Restart dan Verifikasi Layanan DHCP
+Setelah konfigurasi selesai, lakukan restart pada service DHCP server.
+```bash
+service isc-dhcp-server restart
+service isc-dhcp-server status
+```
+Jika konfigurasi benar, maka status service akan menunjukkan active (running).
 
-#### Cek di gilgalad
+##### 5. Pengujian DHCP Client.
+Setelah konfigurasi DHCP Server selesai dan service telah berjalan dengan status **active (running)**, langkah selanjutnya adalah melakukan pengujian pada node client untuk memastikan bahwa node tersebut sudah mendapatkan IP address secara otomatis serta dapat terkoneksi ke internet.
+
+#### Pengujian pada Node **Gilgalad**
+Pada node **Gilgalad**, dilakukan perintah berikut untuk menguji koneksi internet sekaligus memastikan IP yang diperoleh dari DHCP Server dapat digunakan dengan baik:
+
+```bash
+ping google.com
+```
+
+Hasil pengujian:
+
 ---
 
 <img width="970" height="283" alt="image" src="https://github.com/user-attachments/assets/d3ad4b60-ea5a-4842-96f6-011e47654258" />
 
-#### cek di Amandil
+---
+
+#### Pengujian pada Node **Amandil**
+Langkah pengujian yang sama dilakukan pada node Amandil untuk memastikan DHCP Server juga melayani subnet lain dengan benar:
+
+```bash
+ping google.com
+```
+
+hasil pengujian:
+
 ---
 
 <img width="969" height="294" alt="image" src="https://github.com/user-attachments/assets/9927b2ef-4b6b-47cd-8b90-2a561e8ca496" />
+
+---
 
 
 ### Soal 4
