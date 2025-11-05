@@ -442,6 +442,149 @@ dig google.com
 ### Soal 5
 ---
 
+Untuk memudahkan, nama alias www.<xxxx>.com dibuat untuk peta utama <xxxx>.com. Reverse PTR juga dibuat agar lokasi Erendis dan Amdir dapat dilacak dari alamat fisik tanahnya. Erendis juga menambahkan pesan rahasia (TXT record) pada petanya: "Cincin Sauron" yang menunjuk ke lokasi Elros, dan "Aliansi Terakhir" yang menunjuk ke lokasi Pharazon. Pastikan Amdir juga mengetahui pesan rahasia ini.
+
+1. Update zone file k39.com dengan CNAME dan TXT records
+
+```
+cat > /etc/bind/jarkom/k39.com << 'EOF'
+;
+; BIND data file for k39.com
+;
+$TTL    604800
+@       IN      SOA     k39.com. root.k39.com. (
+                        2024103103      ; Serial
+                        604800          ; Refresh
+                        86400           ; Retry
+                        2419200         ; Expire
+                        604800 )        ; Negative Cache TTL
+;
+; Name servers
+@       IN      NS      ns1.k39.com.
+@       IN      NS      ns2.k39.com.
+
+; A record untuk domain utama
+@       IN      A       10.83.3.3
+
+; CNAME record untuk www
+www     IN      CNAME   k39.com.
+
+; A records for name servers
+ns1     IN      A       10.83.3.3
+ns2     IN      A       10.83.3.4
+
+; A records for all important nodes
+palantir    IN  A       10.83.4.3
+elros       IN  A       10.83.1.6
+pharazon    IN  A       10.83.2.3
+elendil     IN  A       10.83.1.2
+isildur     IN  A       10.83.1.3
+anarion     IN  A       10.83.1.4
+galadriel   IN  A       10.83.2.4
+celeborn    IN  A       10.83.2.5
+oropher     IN  A       10.83.2.6
+
+; TXT records dan A records untuk pesan rahasia
+cincinsauron        IN  TXT     "Cincin Sauron"
+cincinsauron        IN  A       10.83.1.6
+
+aliansiterakhir     IN  TXT     "Aliansi Terakhir"
+aliansiterakhir     IN  A       10.83.2.3
+EOF
+```
+
+2. Set permission
+
+```
+chown bind:bind /etc/bind/jarkom/k39.com
+chmod 644 /etc/bind/jarkom/k39.com
+```
+
+3. Check syntax zone file
+
+```
+echo "Checking zone file syntax..."
+named-checkzone k39.com /etc/bind/jarkom/k39.com
+```
+
+4. Tambahkan reverse zone ke named.conf.local
+
+```
+echo "Configuring reverse zone in named.conf.local..."
+cat > /etc/bind/named.conf.local << 'EOF'
+zone "k39.com" {
+    type master;
+    file "/etc/bind/jarkom/k39.com";
+    allow-transfer { 10.83.3.4; };
+};
+
+zone "3.83.10.in-addr.arpa" {
+    type master;
+    file "/etc/bind/jarkom/3.83.10.in-addr.arpa";
+    allow-transfer { 10.83.3.4; };
+};
+EOF
+```
+
+5. Buat reverse zone file
+```
+echo "Creating reverse zone file..."
+cat > /etc/bind/jarkom/3.83.10.in-addr.arpa << 'EOF'
+;
+; BIND reverse data file for 10.83.3.x
+;
+$TTL    604800
+@       IN      SOA     k39.com. root.k39.com. (
+                        2024103103      ; Serial
+                        604800          ; Refresh
+                        86400           ; Retry
+                        2419200         ; Expire
+                        604800 )        ; Negative Cache TTL
+;
+@       IN      NS      ns1.k39.com.
+@       IN      NS      ns2.k39.com.
+
+; PTR Records
+3       IN      PTR     ns1.k39.com.
+4       IN      PTR     ns2.k39.com.
+EOF
+```
+
+6. Set permission reverse zone
+
+```
+chown bind:bind /etc/bind/jarkom/3.83.10.in-addr.arpa
+chmod 644 /etc/bind/jarkom/3.83.10.in-addr.arpa
+```
+
+7. Check syntax reverse zone
+```
+echo "Checking reverse zone syntax..."
+named-checkzone 3.83.10.in-addr.arpa /etc/bind/jarkom/3.83.10.in-addr.arpa
+```
+
+8. Check configuration
+```
+echo "Checking configuration..."
+named-checkconf
+```
+
+9. Restart BIND9
+```
+echo "Restarting BIND9..."
+pkill named 2>/dev/null
+sleep 2
+named -u bind
+sleep 3
+```
+
+10. Update resolver
+
+```
+echo "nameserver 10.83.3.3" > /etc/resolv.conf
+```
+
+
 #### Cek Amandil
 ---
 
@@ -570,8 +713,8 @@ ends 5 2025/10/31 08:29:42;
 
 ## Kesimpulan
 Konfigurasi DHCP untuk **Soal No. 6 sudah benar**:
-- ✅ Manusia: 30 menit (1800 detik)
-- ✅ Peri: 10 menit (600 detik)  
-- ✅ Max lease time: 1 jam (3600 detik) untuk semua
+- Manusia: 30 menit (1800 detik)
+- Peri: 10 menit (600 detik)  
+- Max lease time: 1 jam (3600 detik) untuk semua
 
 
